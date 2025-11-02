@@ -1,0 +1,155 @@
+{
+  "users": [
+    {
+      "name": "Aurélie",
+      "pin": "1212",
+      "list": [
+        {
+          "name": "Montre connectée",
+          "comment": "https://www.amazon.fr/dp/B09J2Y6H6N"
+        },
+        {
+          "name": "T-shirt sport",
+          "comment": ""
+        },
+        {
+          "name": "Baba",
+          "comment": "bobo"
+        }
+      ]
+    },
+    {
+      "name": "Marius",
+      "pin": "1234",
+      "list": [
+        {
+          "name": "Casque audio",
+          "comment": "https://www.fnac.com/casque-bluetooth"
+        },
+        {
+          "name": "Livre sur la photo",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "name": "Anouk",
+      "pin": "1234",
+      "list": [
+        {
+          "name": "Bougie parfumée",
+          "comment": "https://www.etsy.com/bougie"
+        },
+        {
+          "name": "Plaid en laine",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "name": "Agnès",
+      "pin": "1234",
+      "list": [
+        {
+          "name": "Coffret de thés",
+          "comment": ""
+        },
+        {
+          "name": "Roman policier",
+          "comment": "https://www.amazon.fr/dp/2266317853"
+        }
+      ]
+    },
+    {
+      "name": "Emmanuel",
+      "pin": "1234",
+      "list": [
+        {
+          "name": "Bouteille de vin",
+          "comment": ""
+        },
+        {
+          "name": "Tire-bouchon électrique",
+          "comment": "https://www.darty.com/tirebouchon"
+        }
+      ]
+    },
+    {
+      "name": "Gilbert",
+      "pin": "1234",
+      "list": [
+        {
+          "name": "Pull en laine",
+          "comment": ""
+        },
+        {
+          "name": "DVD ancien film",
+          "comment": "https://www.amazon.fr/dp/B00FILM"
+        }
+      ]
+    },
+    {
+      "name": "Monique",
+      "pin": "1234",
+      "list": [
+        {
+          "name": "Parfum",
+          "comment": "https://www.sephora.fr/parfum"
+        },
+        {
+          "name": "Écharpe en soie",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "name": "Marceau",
+      "pin": "1234",
+      "list": [
+        {
+          "name": "Crème visage",
+          "comment": "https://www.nocibe.fr/creme"
+        },
+        {
+          "name": "Livre de recettes",
+          "comment": ""
+        }
+      ]
+    }
+  ],
+  "purchases": {
+    "Marceau": {
+      "Montre connectée": true,
+      "T-shirt sport": false,
+      "Baba": false
+    },
+    "Marius": {
+      "Casque audio": false,
+      "Livre sur la photo": false
+    },
+    "Anouk": {
+      "Bougie parfumée": true,
+      "Plaid en laine": false
+    },
+    "Agnès": {
+      "Coffret de thés": false,
+      "Roman policier": false
+    },
+    "Emmanuel": {
+      "Bouteille de vin": false,
+      "Tire-bouchon électrique": false
+    },
+    "Gilbert": {
+      "Pull en laine": false,
+      "DVD ancien film": false
+    },
+    "Monique": {
+      "Parfum": false,
+      "Écharpe en soie": false
+    },
+    "Aurélie": {
+      "Crème visage": false,
+      "Livre de recettes": false
+    }
+  }
+}
