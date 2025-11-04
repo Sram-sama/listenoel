@@ -43,7 +43,6 @@ app.post("/addItem", (req, res) => {
   const data = loadData();
   const u = data.users.find(x => x.name === user);
   if (!u) return res.status(400).json({ error: "Utilisateur non trouvé" });
-  // assure que u.list est tableau d'objets
   if (!Array.isArray(u.list)) u.list = (u.list || []).map(name => ({ name, comment: "" }));
   u.list.push({ name: item, comment: comment || "" });
   if (!data.purchases) data.purchases = {};
@@ -74,6 +73,21 @@ app.post("/updatePin", (req, res) => {
   const u = data.users.find(x => x.name === user);
   if (!u) return res.status(400).json({ error: "Utilisateur non trouvé" });
   u.pin = newPin;
+  const ok = saveData(data);
+  if (!ok) return res.status(500).json({ error: "Impossible d'enregistrer" });
+  res.json({ success: true });
+});
+
+// Nouvel endpoint pour modifier un commentaire
+app.post("/updateComment", (req, res) => {
+  const { user, item, comment } = req.body;
+  if (!user || !item) return res.status(400).json({ error: "user et item requis" });
+  const data = loadData();
+  const u = data.users.find(x => x.name === user);
+  if (!u) return res.status(400).json({ error: "Utilisateur non trouvé" });
+  const obj = u.list.find(x => x.name === item);
+  if (!obj) return res.status(400).json({ error: "Cadeau non trouvé" });
+  obj.comment = comment || "";
   const ok = saveData(data);
   if (!ok) return res.status(500).json({ error: "Impossible d'enregistrer" });
   res.json({ success: true });

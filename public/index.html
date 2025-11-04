@@ -4,123 +4,55 @@
 <meta charset="UTF-8">
 <title>🎄 Listes de Noël 🎄</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f9f9f9;
-    margin: 0;
-    padding: 20px;
-  }
-
+  body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 20px; }
   h1 { text-align: center; color: #c0392b; }
   h2 { color: #2980b9; }
   h3 { margin-bottom: 5px; }
 
-  #login, #main {
-    max-width: 500px;
-    margin: auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
+  #login, #main { max-width: 500px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 
-  select,
-  input:not([type="checkbox"]):not([type="button"]):not([type="submit"]),
-  textarea,
-  button {
-    padding: 8px;
-    margin: 5px 0;
-    width: 100%;
-    box-sizing: border-box;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+  select, input:not([type="checkbox"]):not([type="button"]):not([type="submit"]), textarea, button {
+    padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; border-radius: 5px; border: 1px solid #ccc;
   }
 
   textarea { resize: vertical; }
 
-  button {
-    background: #2980b9;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
+  button { background: #2980b9; color: white; border: none; cursor: pointer; }
   button:hover { background: #3498db; }
 
   ul { list-style: none; padding-left: 0; margin: 0; }
-  li { padding: 5px 0; }
+  li { padding: 5px 0; display: flex; justify-content: space-between; align-items: center; }
 
-  label {
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
+  label { cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
 
-  #others div {
-    margin-bottom: 15px;
-    background: #f1f1f1;
-    padding: 10px;
-    border-radius: 5px;
-  }
+  #others div { margin-bottom: 15px; background: #f1f1f1; padding: 10px; border-radius: 5px; }
 
   /* Styles popup */
-  #confirmPopup, #pinPopup {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+  #confirmPopup, #pinPopup, #editCommentPopup {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;
   }
 
-  #confirmPopup div, #pinPopup div {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 400px;
-    width: 90%;
-    text-align: center;
+  #confirmPopup div, #pinPopup div, #editCommentPopup div {
+    background: #fff; padding: 20px; border-radius: 10px; max-width: 400px; width: 90%; text-align: center;
   }
 
-  #confirmPopup button, #pinPopup button {
-    margin: 5px;
-    width: 80px;
-  }
+  #confirmPopup button, #pinPopup button, #editCommentPopup button { margin: 5px; width: 80px; }
 
   /* Clavier PIN */
-  #keypad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 10px;
-  }
+  #keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+  #keypad button { padding: 15px; font-size: 18px; border-radius: 5px; }
 
-  #keypad button {
-    padding: 15px;
-    font-size: 18px;
-    border-radius: 5px;
-  }
+  #pinInput { text-align: center; font-size: 18px; letter-spacing: 5px; width: 100%; margin-bottom: 10px; }
 
-  #pinInput {
-    text-align: center;
-    font-size: 18px;
-    letter-spacing: 5px;
-    width: 100%;
-    margin-bottom: 10px;
-  }
+  input[type="checkbox"] { width: auto; height: auto; margin: 0; }
 
-  input[type="checkbox"] {
-    width: auto;
-    height: auto;
-    margin: 0;
-  }
+  #changePinBtn { margin-top: 20px; background: #27ae60; }
 
-  #changePinBtn {
-    margin-top: 20px;
-    background: #27ae60;
-  }
+  .editBtn { cursor: pointer; margin-left: 5px; color: #2980b9; font-weight: bold; }
+
+  /* Footer */
+  footer { text-align: center; margin-top: 40px; font-size: 14px; color: #555; }
 </style>
 </head>
 <body>
@@ -187,9 +119,25 @@
   </div>
 </div>
 
+<!-- Popup modification commentaire -->
+<div id="editCommentPopup">
+  <div>
+    <h3>Modifier le commentaire</h3>
+    <textarea id="editCommentText" rows="3"></textarea>
+    <br>
+    <button id="saveComment">Valider</button>
+    <button id="cancelComment">Annuler</button>
+  </div>
+</div>
+
+<footer>
+  Pour contacter le support technique, contacter Marceau Vienne sur Whatsapp
+</footer>
+
 <script>
 let currentUser;
 let data;
+let editingItem = null;
 
 async function loadData() {
   const res = await fetch("/data");
@@ -209,28 +157,16 @@ document.querySelectorAll(".num").forEach(btn => {
   };
 });
 
-document.getElementById("clear").onclick = () => {
-  document.getElementById("pinInput").value = "";
-};
+document.getElementById("clear").onclick = () => { document.getElementById("pinInput").value = ""; };
 
 document.getElementById("enter").onclick = () => {
   const pin = document.getElementById("pinInput").value;
   const sel = document.getElementById("userSelect").value;
-  if (!sel) {
-    alert("Sélectionnez un utilisateur");
-    return;
-  }
+  if (!sel) { alert("Sélectionnez un utilisateur"); return; }
 
   const user = data.users.find(u => u.name === sel);
-  if (!user) {
-    alert("Utilisateur introuvable");
-    return;
-  }
-  if (pin !== user.pin) {
-    alert("PIN incorrect");
-    document.getElementById("pinInput").value = "";
-    return;
-  }
+  if (!user) { alert("Utilisateur introuvable"); return; }
+  if (pin !== user.pin) { alert("PIN incorrect"); document.getElementById("pinInput").value = ""; return; }
 
   currentUser = sel;
   document.getElementById("login").style.display = "none";
@@ -244,31 +180,29 @@ function renderLists() {
   const me = data.users.find(u => u.name === currentUser) || { list: [] };
   me.list.forEach(itemObj => {
     const li = document.createElement("li");
-    li.textContent = `- ${itemObj.name}${itemObj.comment ? ` (${itemObj.comment})` : ""}`;
+    li.innerHTML = `<span><strong>${itemObj.name}</strong>${itemObj.comment ? ` (${itemObj.comment})` : ""}</span>
+                    <span class="editBtn" onclick="editComment('${itemObj.name}')">✏️</span>`;
     myList.appendChild(li);
   });
 
   const others = document.getElementById("others");
   others.innerHTML = "";
-  data.users
-    .filter(u => u.name !== currentUser)
-    .forEach(u => {
-      const div = document.createElement("div");
-      div.innerHTML = `<h3>${u.name}</h3>`;
-      const ul = document.createElement("ul");
-      u.list.forEach(itemObj => {
-        const li = document.createElement("li");
-        const checkedDisabled = data.purchases && data.purchases[u.name] && data.purchases[u.name][itemObj.name] ? 'checked disabled' : '';
-        li.innerHTML = `
-          <label>
-            <input type="checkbox" ${checkedDisabled} onclick="markPurchase('${u.name}','${itemObj.name}', this)">
-            ${itemObj.name}${itemObj.comment ? ` (${itemObj.comment})` : ""}
-          </label>`;
-        ul.appendChild(li);
-      });
-      div.appendChild(ul);
-      others.appendChild(div);
+  data.users.filter(u => u.name !== currentUser).forEach(u => {
+    const div = document.createElement("div");
+    div.innerHTML = `<h3>${u.name}</h3>`;
+    const ul = document.createElement("ul");
+    u.list.forEach(itemObj => {
+      const li = document.createElement("li");
+      const checkedDisabled = data.purchases && data.purchases[u.name] && data.purchases[u.name][itemObj.name] ? 'checked disabled' : '';
+      li.innerHTML = `<label>
+                        <input type="checkbox" ${checkedDisabled} onclick="markPurchase('${u.name}','${itemObj.name}', this)">
+                        <strong>${itemObj.name}</strong>${itemObj.comment ? ` (${itemObj.comment})` : ""}
+                      </label>`;
+      ul.appendChild(li);
     });
+    div.appendChild(ul);
+    others.appendChild(div);
+  });
 }
 
 // Popup intégrée
@@ -281,38 +215,23 @@ function markPurchase(user, item, checkbox) {
   const yesBtn = document.getElementById("confirmYes");
   const noBtn = document.getElementById("confirmNo");
 
-  const clean = () => {
-    popup.style.display = "none";
-    yesBtn.onclick = null;
-    noBtn.onclick = null;
-  };
+  const clean = () => { popup.style.display = "none"; yesBtn.onclick = null; noBtn.onclick = null; };
 
   yesBtn.onclick = async () => {
-    await fetch("/purchase", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user, item })
-    });
+    await fetch("/purchase", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user, item }) });
     checkbox.checked = true;
     checkbox.disabled = true;
     clean();
   };
 
-  noBtn.onclick = () => {
-    checkbox.checked = false;
-    clean();
-  };
+  noBtn.onclick = () => { checkbox.checked = false; clean(); };
 }
 
 document.getElementById("addBtn").onclick = async () => {
   const val = document.getElementById("newItem").value.trim();
   const comment = document.getElementById("newComment").value.trim();
   if (!val) return;
-  await fetch("/addItem", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ user: currentUser, item: val, comment })
-  });
+  await fetch("/addItem", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user: currentUser, item: val, comment }) });
   document.getElementById("newItem").value = "";
   document.getElementById("newComment").value = "";
   await loadData();
@@ -320,35 +239,36 @@ document.getElementById("addBtn").onclick = async () => {
 };
 
 // Changement de PIN
-document.getElementById("changePinBtn").onclick = () => {
-  document.getElementById("pinPopup").style.display = "flex";
-};
-
-document.getElementById("cancelPin").onclick = () => {
-  document.getElementById("pinPopup").style.display = "none";
-};
-
+document.getElementById("changePinBtn").onclick = () => { document.getElementById("pinPopup").style.display = "flex"; };
+document.getElementById("cancelPin").onclick = () => { document.getElementById("pinPopup").style.display = "none"; };
 document.getElementById("savePin").onclick = async () => {
   const newPin = document.getElementById("newPin").value.trim();
   const confirmPin = document.getElementById("confirmPin").value.trim();
-  if (newPin.length !== 4 || isNaN(newPin)) {
-    alert("Le code PIN doit contenir exactement 4 chiffres.");
-    return;
-  }
-  if (newPin !== confirmPin) {
-    alert("Les codes PIN ne correspondent pas.");
-    return;
-  }
+  if (newPin.length !== 4 || isNaN(newPin)) { alert("Le code PIN doit contenir exactement 4 chiffres."); return; }
+  if (newPin !== confirmPin) { alert("Les codes PIN ne correspondent pas."); return; }
 
-  await fetch("/updatePin", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ user: currentUser, newPin })
-  });
-
+  await fetch("/updatePin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user: currentUser, newPin }) });
   alert("Votre code PIN a été mis à jour !");
   document.getElementById("pinPopup").style.display = "none";
   await loadData();
+};
+
+// Édition commentaire
+function editComment(item) {
+  editingItem = item;
+  const me = data.users.find(u => u.name === currentUser);
+  const obj = me.list.find(x => x.name === item);
+  document.getElementById("editCommentText").value = obj.comment || "";
+  document.getElementById("editCommentPopup").style.display = "flex";
+}
+
+document.getElementById("cancelComment").onclick = () => { document.getElementById("editCommentPopup").style.display = "none"; };
+document.getElementById("saveComment").onclick = async () => {
+  const newComment = document.getElementById("editCommentText").value.trim();
+  await fetch("/updateComment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user: currentUser, item: editingItem, comment: newComment }) });
+  document.getElementById("editCommentPopup").style.display = "none";
+  await loadData();
+  renderLists();
 };
 
 loadData();
