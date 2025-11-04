@@ -79,4 +79,4 @@ app.post("/updatePin", (req, res) => {
   res.json({ success: true });
 });
 
-app.listen(PORT, () => console.log(`Serveur lancé sur http://localhost:${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`Serveur lancé sur le port ${PORT}`));
