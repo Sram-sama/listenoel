@@ -23,7 +23,20 @@
     {
       "name": "Agnès",
       "pin": "3009",
-      "list": []
+      "list": [
+        {
+          "name": "Ensemble assiettes plates et à dessert.",
+          "comment": "Cadeau à faire en commun. Je pense aller voir chez Alinéa/Ikea/Maison du monde....pour trouver un modèle qui me plaise, avoir un ordre de prix et voir ensuite comment partager...."
+        },
+        {
+          "name": "Brosse drainage visage",
+          "comment": "Sur Amazon, GXGM Brosse drainage lymphatique, masseur pour la mâchoire et le menton, outil de sculpture du visage, prix 9,99 euros"
+        },
+        {
+          "name": "Masque collagène Visage",
+          "comment": "Sur Amazon, Masque Visage Collagen Korean, 75 ml, Curcuma + rétinol + vitamine C, Hydratation profonde etc.... (12, 99 euros)"
+        }
+      ]
     },
     {
       "name": "Emmanuel",
@@ -56,7 +69,7 @@
       "list": [
         {
           "name": "Cadeau test",
-          "comment": "Voici un cadeau tes"
+          "comment": "Voici un cadeau test réservé"
         },
         {
           "name": "Cassette audio Daft Punk - Homework",
@@ -69,6 +82,14 @@
         {
           "name": "Casquette honda",
           "comment": "https://shop-moto.honda.fr/kenny-casual-casquette-paddock-honda-moto"
+        },
+        {
+          "name": "Parfum",
+          "comment": "à déterminer"
+        },
+        {
+          "name": "Montre",
+          "comment": "à déterminer"
         }
       ]
     }
@@ -79,13 +100,19 @@
       "Cassettte Daft Punk - Homework": false,
       "Cassette audio Daft Punk - Homework": false,
       "Parapluie": false,
-      "Casquette honda": false
+      "Casquette honda": false,
+      "Parfum": false,
+      "Montre": false
     },
     "Marius": {
       "Casquette honda": false
     },
     "Anouk": {},
-    "Agnès": {},
+    "Agnès": {
+      "Ensemble assiettes plates et à dessert.": false,
+      "Brosse drainage visage": false,
+      "Masque collagène Visage": false
+    },
     "Emmanuel": {},
     "Gilbert": {
       "Rasoir electrique": false
