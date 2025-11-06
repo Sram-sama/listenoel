@@ -9,7 +9,7 @@
   h2 { color: #2980b9; }
   h3 { margin-bottom: 5px; }
 
-  #login, #main { max-width: 700px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+  #login, #main { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 
   select, input:not([type="checkbox"]):not([type="button"]):not([type="submit"]), textarea, button {
     padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; border-radius: 5px; border: 1px solid #ccc;
@@ -21,13 +21,38 @@
   button:hover { background: #3498db; }
 
   ul { list-style: none; padding-left: 0; margin: 0; }
-  li { padding: 5px 0; display: flex; justify-content: space-between; align-items: center; }
+  /* chaque item : checkbox + contenu ; contenu à gauche, bouton édit à droite */
+  li {
+    padding: 8px 0;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
 
-  label { cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  /* zone contenant nom + description, alignée à gauche et prenant le max d'espace */
+  .item-content {
+    flex: 1 1 auto;
+    text-align: left;
+    display: block;
+  }
+
+  .item-name { display: block; font-weight: 700; margin-bottom: 4px; }
+  .item-comment { display: block; margin-top: 0; color: #333; word-break: break-word; }
+
+  /* petite marge autour de la checkbox */
+  input[type="checkbox"] {
+    margin: 6px 12px 0 0;
+    width: auto;
+    height: auto;
+    cursor: pointer;
+  }
+
+  label { cursor: default; display: inline-flex; align-items: flex-start; gap: 8px; }
 
   #others div { margin-bottom: 15px; background: #f1f1f1; padding: 10px; border-radius: 5px; }
 
-  /* Styles popup */
+  /* Popups */
   #confirmPopup, #pinPopup, #editCommentPopup {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;
@@ -39,19 +64,18 @@
 
   #confirmPopup button, #pinPopup button, #editCommentPopup button { margin: 5px; width: 80px; }
 
-  /* Clavier PIN */
   #keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
   #keypad button { padding: 15px; font-size: 18px; border-radius: 5px; }
 
   #pinInput { text-align: center; font-size: 18px; letter-spacing: 5px; width: 100%; margin-bottom: 10px; }
 
-  input[type="checkbox"] { width: auto; height: auto; margin: 0; }
-
   #changePinBtn { margin-top: 20px; background: #27ae60; }
 
-  .editBtn { cursor: pointer; margin-left: 5px; color: #2980b9; font-weight: bold; }
+  .editBtn { cursor: pointer; margin-left: 10px; color: #2980b9; font-weight: bold; flex: 0 0 auto; }
 
-  /* Footer */
+  a { color: #2980b9; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
   footer { text-align: center; margin-top: 40px; font-size: 14px; color: #555; }
 </style>
 </head>
@@ -99,7 +123,7 @@
   <button id="changePinBtn">Changer mon code PIN</button>
 </div>
 
-<!-- Popup confirmation -->
+<!-- Popups -->
 <div id="confirmPopup">
   <div>
     <p id="confirmMessage"></p>
@@ -108,7 +132,6 @@
   </div>
 </div>
 
-<!-- Popup changement de PIN -->
 <div id="pinPopup">
   <div>
     <h3>Changer votre code PIN</h3>
@@ -119,7 +142,6 @@
   </div>
 </div>
 
-<!-- Popup modification commentaire -->
 <div id="editCommentPopup">
   <div>
     <h3>Modifier le commentaire</h3>
@@ -131,7 +153,7 @@
 </div>
 
 <footer>
-  Pour contacter le support technique, envoyez un message à Marceau Vienne sur Whatsapp
+  Pour contacter le support technique, contacter Marceau Vienne sur Whatsapp
 </footer>
 
 <script>
@@ -149,7 +171,6 @@ async function loadData() {
   });
 }
 
-// Gestion clavier PIN
 document.querySelectorAll(".num").forEach(btn => {
   btn.onclick = () => {
     const input = document.getElementById("pinInput");
@@ -174,14 +195,26 @@ document.getElementById("enter").onclick = () => {
   renderLists();
 };
 
+function makeLinksClickable(text) {
+  if (!text) return "";
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+}
+
 function renderLists() {
   const myList = document.getElementById("myList");
   myList.innerHTML = "";
   const me = data.users.find(u => u.name === currentUser) || { list: [] };
   me.list.forEach(itemObj => {
+    const commentHTML = itemObj.comment ? `<span class="item-comment"> ${makeLinksClickable(itemObj.comment)}</span>` : `<span class="item-comment"></span>`;
     const li = document.createElement("li");
-    li.innerHTML = `<span><strong>${itemObj.name}</strong>${itemObj.comment ? ` (${itemObj.comment})` : ""}</span>
-                    <span class="editBtn" onclick="editComment('${itemObj.name}')">✏️</span>`;
+    li.innerHTML = `
+      <span class="item-content">
+        <span class="item-name">${escapeHtml(itemObj.name)}</span>
+        ${commentHTML}
+      </span>
+      <span class="editBtn" onclick="editComment('${escapeJs(itemObj.name)}')">✏️</span>
+    `;
     myList.appendChild(li);
   });
 
@@ -189,15 +222,19 @@ function renderLists() {
   others.innerHTML = "";
   data.users.filter(u => u.name !== currentUser).forEach(u => {
     const div = document.createElement("div");
-    div.innerHTML = `<h3>${u.name}</h3>`;
+    div.innerHTML = `<h3>${escapeHtml(u.name)}</h3>`;
     const ul = document.createElement("ul");
     u.list.forEach(itemObj => {
-      const li = document.createElement("li");
       const checkedDisabled = data.purchases && data.purchases[u.name] && data.purchases[u.name][itemObj.name] ? 'checked disabled' : '';
-      li.innerHTML = `<label>
-                        <input type="checkbox" ${checkedDisabled} onclick="markPurchase('${u.name}','${itemObj.name}', this)">
-                        <strong>${itemObj.name}</strong>${itemObj.comment ? ` (${itemObj.comment})` : ""}
-                      </label>`;
+      const commentHTML = itemObj.comment ? `<span class="item-comment"> ${makeLinksClickable(itemObj.comment)}</span>` : `<span class="item-comment"></span>`;
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <input type="checkbox" ${checkedDisabled} onclick="markPurchase('${escapeJs(u.name)}','${escapeJs(itemObj.name)}', this)">
+        <span class="item-content">
+          <span class="item-name">${escapeHtml(itemObj.name)}</span>
+          ${commentHTML}
+        </span>
+      `;
       ul.appendChild(li);
     });
     div.appendChild(ul);
@@ -205,7 +242,7 @@ function renderLists() {
   });
 }
 
-// Popup intégrée
+/* Confirmation popup pour réservation */
 function markPurchase(user, item, checkbox) {
   const popup = document.getElementById("confirmPopup");
   const message = document.getElementById("confirmMessage");
@@ -227,6 +264,7 @@ function markPurchase(user, item, checkbox) {
   noBtn.onclick = () => { checkbox.checked = false; clean(); };
 }
 
+/* Ajout d'un cadeau */
 document.getElementById("addBtn").onclick = async () => {
   const val = document.getElementById("newItem").value.trim();
   const comment = document.getElementById("newComment").value.trim();
@@ -238,7 +276,7 @@ document.getElementById("addBtn").onclick = async () => {
   renderLists();
 };
 
-// Changement de PIN
+/* PIN */
 document.getElementById("changePinBtn").onclick = () => { document.getElementById("pinPopup").style.display = "flex"; };
 document.getElementById("cancelPin").onclick = () => { document.getElementById("pinPopup").style.display = "none"; };
 document.getElementById("savePin").onclick = async () => {
@@ -253,7 +291,7 @@ document.getElementById("savePin").onclick = async () => {
   await loadData();
 };
 
-// Édition commentaire
+/* Edit comment */
 function editComment(item) {
   editingItem = item;
   const me = data.users.find(u => u.name === currentUser);
@@ -270,6 +308,16 @@ document.getElementById("saveComment").onclick = async () => {
   await loadData();
   renderLists();
 };
+
+/* Helpers pour échapper le HTML/JS injecté par les noms/commentaires */
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+}
+function escapeJs(str) {
+  if (!str) return "";
+  return String(str).replace(/'/g, "\\'");
+}
 
 loadData();
 </script>
