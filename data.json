@@ -13,7 +13,32 @@
     {
       "name": "Marius",
       "pin": "2103",
-      "list": []
+      "list": [
+        {
+          "name": "Manga = \"Kindergarten Wars\" tome 11",
+          "comment": ""
+        },
+        {
+          "name": "Manga = \"Gokurakugai\" tome 5",
+          "comment": "Il sort le 3 décembre"
+        },
+        {
+          "name": "Manga = \"Kagurabachi\" tome 6",
+          "comment": "Il sort le 5 décembre"
+        },
+        {
+          "name": "Manga = \"Bluelock\" tome 29",
+          "comment": ""
+        },
+        {
+          "name": "Manga = \"Kingdom\" à partir du tome 45",
+          "comment": "Il y a 75 tome en tout, faites vous plaisir 🤣"
+        },
+        {
+          "name": "Vinyle \"Modal Soul\" de Nujabes",
+          "comment": "https://www.fnac.com/a14198874/Nujabes-Modal-Soul-Vinyle-album (c'est lui, attendez peut-être le black friday car il est cher)"
+        }
+      ]
     },
     {
       "name": "Anouk",
@@ -35,6 +60,14 @@
         {
           "name": "Masque collagène Visage",
           "comment": "Sur Amazon, Masque Visage Collagen Korean, 75 ml, Curcuma + rétinol + vitamine C, Hydratation profonde etc.... (12, 99 euros)"
+        },
+        {
+          "name": "Vauki, 2 packs coque I phone XR",
+          "comment": "https://www.amazon.fr/gp/product/B0D676GW21/ref=ox_sc_act_image_1?smid=A1SFE9EUZFRQ3X&th=1"
+        },
+        {
+          "name": "Berkin Arts Coque Gustave Klimt",
+          "comment": "https://www.amazon.fr/gp/product/B09LV28KG9/ref=ox_sc_act_image_7?smid=A3DA9G9ZVAKCA3&th=1"
         }
       ]
     },
@@ -49,14 +82,51 @@
       "list": [
         {
           "name": "Rasoir electrique",
-          "comment": "Précisions des caracteristiques à venir"
+          "comment": "Précisions des caracteristiques :\nFabricant : ASPRINGE \nmodele  B0FX4S1HFC\n\n2025 Nouveau Mini Rasoir Électrique pour Hommes IPX7 Étanche, Portable Usage Sec Humide Shaver pour Maison, Rasoir de Magnétique Voyage Rechargeable USB (Noir) \n   Prix Amazon = 29,99 euros"
+        },
+        {
+          "name": "DVDs série La guerre des trônes",
+          "comment": "49,99 euros chez Amazon, Fnac, ..."
+        },
+        {
+          "name": "Roman La maison vide de Laurent Mauvignier (Prix Goncourt 2025)",
+          "comment": "25 euros chez Amazon, Fnac ..."
         }
       ]
     },
     {
       "name": "Monique",
       "pin": "1112",
-      "list": []
+      "list": [
+        {
+          "name": "pyjama jersey fin",
+          "comment": ""
+        },
+        {
+          "name": "tableau blanc pour magnets",
+          "comment": "comme Nounouk"
+        },
+        {
+          "name": "Grande horloge",
+          "comment": "vue sur Maisons du monde"
+        },
+        {
+          "name": "drap housse marron clair 2 personnes",
+          "comment": "De bonne qualité"
+        },
+        {
+          "name": "Gilet sans manche matelassée",
+          "comment": ""
+        },
+        {
+          "name": "Affiche de Bourges",
+          "comment": "18,50 euros -Déjà acheté- donc ... a rembourser"
+        },
+        {
+          "name": "Drap de bain pas trop épais",
+          "comment": ""
+        }
+      ]
     },
     {
       "name": "Loïc",
@@ -69,7 +139,7 @@
       "list": [
         {
           "name": "Cadeau test",
-          "comment": "Voici un cadeau test réservé"
+          "comment": "Voici un exemple de cadeau test réservé"
         },
         {
           "name": "Cassette audio Daft Punk - Homework",
@@ -89,7 +159,7 @@
         },
         {
           "name": "Montre",
-          "comment": "à déterminer"
+          "comment": "Orient Bambino modèle AC00009N : bracelet cuir marron, cadran ivoire, chiffres romains"
         }
       ]
     }
@@ -98,26 +168,43 @@
     "Marceau": {
       "Cadeau test": true,
       "Cassettte Daft Punk - Homework": false,
-      "Cassette audio Daft Punk - Homework": false,
+      "Cassette audio Daft Punk - Homework": true,
       "Parapluie": false,
-      "Casquette honda": false,
+      "Casquette honda": true,
       "Parfum": false,
       "Montre": false
     },
     "Marius": {
-      "Casquette honda": false
+      "Manga = \"Kindergarten Wars\" tome 11": false,
+      "Manga = \"Gokurakugai\" tome 5": false,
+      "Manga = \"Kagurabachi\" tome 6": false,
+      "Manga = \"Bluelock\" tome 29": false,
+      "Manga = \"Kingdom\" à partir du tome 45": false,
+      "Vinyle \"Modal Soul\" de Nujabes": false
     },
     "Anouk": {},
     "Agnès": {
       "Ensemble assiettes plates et à dessert.": false,
       "Brosse drainage visage": false,
-      "Masque collagène Visage": false
+      "Masque collagène Visage": false,
+      "Vauki, 2 packs coque I phone XR": false,
+      "Berkin Arts Coque Gustave Klimt": false
     },
     "Emmanuel": {},
     "Gilbert": {
-      "Rasoir electrique": false
+      "Rasoir electrique": false,
+      "DVDs série La guerre des trônes": false,
+      "Roman La maison vide de Laurent Mauvignier (Prix Goncourt 2025)": false
     },
-    "Monique": {},
+    "Monique": {
+      "pyjama jersey fin": false,
+      "tableau blanc pour magnets": false,
+      "Grande horloge": true,
+      "drap housse marron clair 2 personnes": false,
+      "Gilet sans manche matelassée": false,
+      "Affiche de Bourges": true,
+      "Drap de bain pas trop épais": false
+    },
     "Loïc": {},
     "Aurélie": {}
   }
