@@ -1,0 +1,124 @@
+{
+  "users": [
+    {
+      "name": "Aurélie",
+      "list": [
+        {
+          "name": "Participation table basse",
+          "comment": "Voir lien Temu mis sur Prague trip"
+        }
+      ],
+      "pinHash": "771d971f688dcf9582725b0559172db0:4341b6f6dcbc4aa0d8248ee91edda177007fa5838e48088cf85caa950a2a3054"
+    },
+    {
+      "name": "Marius",
+      "list": [],
+      "pinHash": "0d749b6469d51eefae31d97b42d45b9a:80f2d34c670bd100af9e89206a610e7a764dd119883939dc44280117225436eb"
+    },
+    {
+      "name": "Anouk",
+      "list": [],
+      "pinHash": "2d2d5e1aebf5b934692d837037706fe7:a644f53fba087f8ace889aa84fd07d065304564bbcb4629a9c5d203a3b44b334"
+    },
+    {
+      "name": "Agnès",
+      "list": [
+        {
+          "name": "Ensemble assiettes plates et à dessert.",
+          "comment": "Cadeau à faire en commun. Je pense aller voir chez Alinéa/Ikea/Maison du monde....pour trouver un modèle qui me plaise, avoir un ordre de prix et voir ensuite comment partager...."
+        },
+        {
+          "name": "Brosse drainage visage",
+          "comment": "Sur Amazon, GXGM Brosse drainage lymphatique, masseur pour la mâchoire et le menton, outil de sculpture du visage, prix 9,99 euros"
+        },
+        {
+          "name": "Masque collagène Visage",
+          "comment": "Sur Amazon, Masque Visage Collagen Korean, 75 ml, Curcuma + rétinol + vitamine C, Hydratation profonde etc.... (12, 99 euros)"
+        }
+      ],
+      "pinHash": "1518b16282f5fa5f9b94880ade5b9571:409ffa73483b795f38c070fbbe0f74c90315aa06066a6a2961a8c54e7d113ac4"
+    },
+    {
+      "name": "Emmanuel",
+      "list": [],
+      "pinHash": "c51f25b121c0695164232a9ab523dc81:bc15b4470238ad378116b0e46f3fd056eff457e70335a3695d32534f30bd332d"
+    },
+    {
+      "name": "Gilbert",
+      "list": [
+        {
+          "name": "Rasoir electrique",
+          "comment": "Précisions des caracteristiques à venir"
+        }
+      ],
+      "pinHash": "912459eca5879a3081ed7275931e541e:dade870533c77d77f7b3015117a4082c5e3fd85a948b9c4f7b38721ad517fe6b"
+    },
+    {
+      "name": "Monique",
+      "list": [],
+      "pinHash": "8f3acfde210fbe171e7cfa3064140e0d:0ed41b94a805a17e4c9ef3688c203084cf726536cf5047fefe4d3051ea1233c7"
+    },
+    {
+      "name": "Loïc",
+      "list": [],
+      "pinHash": "5f50d7fcf68e6f7bf4735d0b3c25ed14:cbcc9a4203adb0840641c2e9c06350a904eae0de23c5f6896480fbcdcb2e4c8f"
+    },
+    {
+      "name": "Marceau",
+      "list": [
+        {
+          "name": "Cadeau test",
+          "comment": "Voici un cadeau test réservé"
+        },
+        {
+          "name": "Cassette audio Daft Punk - Homework",
+          "comment": ""
+        },
+        {
+          "name": "Parapluie",
+          "comment": "non pliable, manche en bois, ouverture automatique, avec une pointe"
+        },
+        {
+          "name": "Casquette honda",
+          "comment": "https://shop-moto.honda.fr/kenny-casual-casquette-paddock-honda-moto"
+        },
+        {
+          "name": "Parfum",
+          "comment": "à déterminer"
+        },
+        {
+          "name": "Montre",
+          "comment": "à déterminer"
+        }
+      ],
+      "pinHash": "e3f9a270dda522c6948402b2e253410e:b37761355cc64bcdff769f10eee79b9e14c02eb68a2df6020af15d3e72c1911e"
+    }
+  ],
+  "purchases": {
+    "Marceau": {
+      "Cadeau test": true,
+      "Cassettte Daft Punk - Homework": false,
+      "Cassette audio Daft Punk - Homework": false,
+      "Parapluie": false,
+      "Casquette honda": false,
+      "Parfum": false,
+      "Montre": false
+    },
+    "Marius": {
+      "Casquette honda": false
+    },
+    "Anouk": {},
+    "Agnès": {
+      "Ensemble assiettes plates et à dessert.": false,
+      "Brosse drainage visage": false,
+      "Masque collagène Visage": false
+    },
+    "Emmanuel": {},
+    "Gilbert": {
+      "Rasoir electrique": false
+    },
+    "Monique": {},
+    "Loïc": {},
+    "Aurélie": {}
+  }
+}

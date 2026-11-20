@@ -121,6 +121,7 @@
   <div id="others"></div>
 
   <button id="changePinBtn">Changer mon code PIN</button>
+  <button id="logoutBtn" style="background:#7f8c8d;">Me déconnecter</button>
 </div>
 
 <!-- Popups -->
@@ -157,18 +158,63 @@
 </footer>
 
 <script>
-let currentUser;
-let data;
+let currentUser = null;
+let token = null;
+let data = null;
 let editingItem = null;
 
-async function loadData() {
-  const res = await fetch("/data");
-  data = await res.json();
+try { token = sessionStorage.getItem("token"); } catch (e) {}
+
+/* Appel API avec jeton ; renvoie null (et ramène au login) si la session a expiré */
+async function api(path, body) {
+  const opts = { headers: { "Content-Type": "application/json" } };
+  if (token) opts.headers["Authorization"] = "Bearer " + token;
+  if (body !== undefined) { opts.method = "POST"; opts.body = JSON.stringify(body); }
+  const res = await fetch(path, opts);
+  if (res.status === 401 && path !== "/login") { logout("Session expirée, reconnectez-vous."); return null; }
+  let json = {};
+  try { json = await res.json(); } catch (e) {}
+  if (!res.ok) { alert(json.error || "Une erreur est survenue"); return null; }
+  return json;
+}
+
+function logout(msg) {
+  token = null; currentUser = null; data = null;
+  try { sessionStorage.removeItem("token"); } catch (e) {}
+  document.getElementById("main").style.display = "none";
+  document.getElementById("login").style.display = "block";
+  document.getElementById("pinInput").value = "";
+  if (msg) alert(msg);
+}
+
+async function loadUsers() {
+  const res = await fetch("/users");
+  const { users } = await res.json();
   const select = document.getElementById("userSelect");
-  select.innerHTML = "<option value=''>-- Sélectionner --</option>";
-  data.users.forEach(u => {
-    select.innerHTML += `<option value="${u.name}">${u.name}</option>`;
+  select.innerHTML = "";
+  const first = document.createElement("option");
+  first.value = ""; first.textContent = "-- Sélectionner --";
+  select.appendChild(first);
+  users.forEach(name => {
+    const o = document.createElement("option");
+    o.value = name; o.textContent = name;
+    select.appendChild(o);
   });
+}
+
+async function loadData() {
+  const d = await api("/data");
+  if (!d) return false;
+  data = d;
+  currentUser = d.me;
+  return true;
+}
+
+async function showMain() {
+  if (!(await loadData())) return;
+  document.getElementById("login").style.display = "none";
+  document.getElementById("main").style.display = "block";
+  renderLists();
 }
 
 document.querySelectorAll(".num").forEach(btn => {
@@ -180,25 +226,34 @@ document.querySelectorAll(".num").forEach(btn => {
 
 document.getElementById("clear").onclick = () => { document.getElementById("pinInput").value = ""; };
 
-document.getElementById("enter").onclick = () => {
+document.getElementById("enter").onclick = async () => {
   const pin = document.getElementById("pinInput").value;
   const sel = document.getElementById("userSelect").value;
   if (!sel) { alert("Sélectionnez un utilisateur"); return; }
-
-  const user = data.users.find(u => u.name === sel);
-  if (!user) { alert("Utilisateur introuvable"); return; }
-  if (pin !== user.pin) { alert("PIN incorrect"); document.getElementById("pinInput").value = ""; return; }
-
-  currentUser = sel;
-  document.getElementById("login").style.display = "none";
-  document.getElementById("main").style.display = "block";
-  renderLists();
+  const r = await api("/login", { user: sel, pin });
+  document.getElementById("pinInput").value = "";
+  if (!r) return;
+  token = r.token;
+  try { sessionStorage.setItem("token", token); } catch (e) {}
+  await showMain();
 };
 
+/* Échappe le HTML puis rend les liens cliquables */
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+}
 function makeLinksClickable(text) {
   if (!text) return "";
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  return text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+  return escapeHtml(text).replace(/(https?:\/\/[^\s<]+)/g,
+    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+}
+
+function itemContent(itemObj) {
+  return `<span class="item-content">
+      <span class="item-name">${escapeHtml(itemObj.name)}</span>
+      <span class="item-comment">${itemObj.comment ? " " + makeLinksClickable(itemObj.comment) : ""}</span>
+    </span>`;
 }
 
 function renderLists() {
@@ -206,15 +261,9 @@ function renderLists() {
   myList.innerHTML = "";
   const me = data.users.find(u => u.name === currentUser) || { list: [] };
   me.list.forEach(itemObj => {
-    const commentHTML = itemObj.comment ? `<span class="item-comment"> ${makeLinksClickable(itemObj.comment)}</span>` : `<span class="item-comment"></span>`;
     const li = document.createElement("li");
-    li.innerHTML = `
-      <span class="item-content">
-        <span class="item-name">${escapeHtml(itemObj.name)}</span>
-        ${commentHTML}
-      </span>
-      <span class="editBtn" onclick="editComment('${escapeJs(itemObj.name)}')">✏️</span>
-    `;
+    li.innerHTML = itemContent(itemObj) + `<span class="editBtn">✏️</span>`;
+    li.querySelector(".editBtn").onclick = () => editComment(itemObj.name);
     myList.appendChild(li);
   });
 
@@ -225,16 +274,10 @@ function renderLists() {
     div.innerHTML = `<h3>${escapeHtml(u.name)}</h3>`;
     const ul = document.createElement("ul");
     u.list.forEach(itemObj => {
-      const checkedDisabled = data.purchases && data.purchases[u.name] && data.purchases[u.name][itemObj.name] ? 'checked disabled' : '';
-      const commentHTML = itemObj.comment ? `<span class="item-comment"> ${makeLinksClickable(itemObj.comment)}</span>` : `<span class="item-comment"></span>`;
       const li = document.createElement("li");
-      li.innerHTML = `
-        <input type="checkbox" ${checkedDisabled} onclick="markPurchase('${escapeJs(u.name)}','${escapeJs(itemObj.name)}', this)">
-        <span class="item-content">
-          <span class="item-name">${escapeHtml(itemObj.name)}</span>
-          ${commentHTML}
-        </span>
-      `;
+      li.innerHTML = `<input type="checkbox" ${itemObj.purchased ? "checked disabled" : ""}>` + itemContent(itemObj);
+      const cb = li.querySelector("input");
+      cb.onclick = () => markPurchase(u.name, itemObj.name, cb);
       ul.appendChild(li);
     });
     div.appendChild(ul);
@@ -245,22 +288,19 @@ function renderLists() {
 /* Confirmation popup pour réservation */
 function markPurchase(user, item, checkbox) {
   const popup = document.getElementById("confirmPopup");
-  const message = document.getElementById("confirmMessage");
-  message.textContent = `Attention, êtes-vous sûr de réserver le cadeau "${item}" pour ${user} ?`;
+  document.getElementById("confirmMessage").textContent =
+    `Attention, êtes-vous sûr de réserver le cadeau "${item}" pour ${user} ?`;
   popup.style.display = "flex";
 
   const yesBtn = document.getElementById("confirmYes");
   const noBtn = document.getElementById("confirmNo");
-
   const clean = () => { popup.style.display = "none"; yesBtn.onclick = null; noBtn.onclick = null; };
 
   yesBtn.onclick = async () => {
-    await fetch("/purchase", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user, item }) });
-    checkbox.checked = true;
-    checkbox.disabled = true;
+    const r = await api("/purchase", { user, item });
+    if (r) { checkbox.checked = true; checkbox.disabled = true; } else { checkbox.checked = false; }
     clean();
   };
-
   noBtn.onclick = () => { checkbox.checked = false; clean(); };
 }
 
@@ -269,12 +309,14 @@ document.getElementById("addBtn").onclick = async () => {
   const val = document.getElementById("newItem").value.trim();
   const comment = document.getElementById("newComment").value.trim();
   if (!val) return;
-  await fetch("/addItem", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user: currentUser, item: val, comment }) });
+  const r = await api("/addItem", { item: val, comment });
+  if (!r) return;
   document.getElementById("newItem").value = "";
   document.getElementById("newComment").value = "";
-  await loadData();
-  renderLists();
+  if (await loadData()) renderLists();
 };
+
+document.getElementById("logoutBtn").onclick = () => logout();
 
 /* PIN */
 document.getElementById("changePinBtn").onclick = () => { document.getElementById("pinPopup").style.display = "flex"; };
@@ -282,13 +324,14 @@ document.getElementById("cancelPin").onclick = () => { document.getElementById("
 document.getElementById("savePin").onclick = async () => {
   const newPin = document.getElementById("newPin").value.trim();
   const confirmPin = document.getElementById("confirmPin").value.trim();
-  if (newPin.length !== 4 || isNaN(newPin)) { alert("Le code PIN doit contenir exactement 4 chiffres."); return; }
+  if (!/^\d{4}$/.test(newPin)) { alert("Le code PIN doit contenir exactement 4 chiffres."); return; }
   if (newPin !== confirmPin) { alert("Les codes PIN ne correspondent pas."); return; }
-
-  await fetch("/updatePin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user: currentUser, newPin }) });
+  const r = await api("/updatePin", { newPin });
+  if (!r) return;
   alert("Votre code PIN a été mis à jour !");
+  document.getElementById("newPin").value = "";
+  document.getElementById("confirmPin").value = "";
   document.getElementById("pinPopup").style.display = "none";
-  await loadData();
 };
 
 /* Edit comment */
@@ -303,23 +346,16 @@ function editComment(item) {
 document.getElementById("cancelComment").onclick = () => { document.getElementById("editCommentPopup").style.display = "none"; };
 document.getElementById("saveComment").onclick = async () => {
   const newComment = document.getElementById("editCommentText").value.trim();
-  await fetch("/updateComment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user: currentUser, item: editingItem, comment: newComment }) });
+  const r = await api("/updateComment", { item: editingItem, comment: newComment });
   document.getElementById("editCommentPopup").style.display = "none";
-  await loadData();
-  renderLists();
+  if (r && await loadData()) renderLists();
 };
 
-/* Helpers pour échapper le HTML/JS injecté par les noms/commentaires */
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
-}
-function escapeJs(str) {
-  if (!str) return "";
-  return String(str).replace(/'/g, "\\'");
-}
-
-loadData();
+/* Démarrage : liste des noms, puis reprise de session si possible */
+(async () => {
+  await loadUsers();
+  if (token) await showMain();
+})();
 </script>
 
 </body>
