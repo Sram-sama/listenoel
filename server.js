@@ -59,6 +59,26 @@ function saveData(data) {
   fs.renameSync(tmp, DATA_FILE); // écriture atomique
 }
 
+/* ---------- Remise à zéro des cadeaux (une seule fois) ----------
+   Définir la variable RESET_GIFTS (ex. "1") : au démarrage, tous les cadeaux et
+   réservations sont effacés, les personnes et leurs PIN sont conservés.
+   Un fichier marqueur évite de recommencer à chaque redémarrage ;
+   pour refaire une remise à zéro, changer la valeur (ex. "2"). */
+(function resetGiftsIfAsked() {
+  const id = process.env.RESET_GIFTS;
+  if (!id) return;
+  const marker = path.join(DATA_DIR, ".gifts-reset");
+  let done = "";
+  try { done = fs.readFileSync(marker, "utf8").trim(); } catch (e) {}
+  if (done === id) return;
+  const data = loadData();
+  data.users.forEach(u => { u.list = []; });
+  data.purchases = {};
+  saveData(data);
+  fs.writeFileSync(marker, id);
+  console.log("Cadeaux remis à zéro (RESET_GIFTS=" + id + ")");
+})();
+
 /* ---------- Middleware ---------- */
 app.set("trust proxy", 1);
 app.disable("x-powered-by");
@@ -81,21 +101,6 @@ function auth(req, res, next) {
 
 const str = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 
-/* ---------- Anti force brute (4 chiffres = 10 000 combinaisons) ---------- */
-const fails = new Map(); // clé -> { n, until }
-const MAX_FAILS = 5, LOCK_MS = 15 * 60 * 1000;
-function lockedFor(key) {
-  const f = fails.get(key);
-  return f && f.until > Date.now() ? Math.ceil((f.until - Date.now()) / 60000) : 0;
-}
-function registerFail(key) {
-  const f = fails.get(key) || { n: 0, until: 0 };
-  if (f.until && f.until <= Date.now()) { f.n = 0; f.until = 0; }
-  f.n += 1;
-  if (f.n >= MAX_FAILS) f.until = Date.now() + LOCK_MS;
-  fails.set(key, f);
-}
-
 /* ---------- Routes publiques ---------- */
 app.get("/users", (req, res) => {
   res.json({ users: loadData().users.map(u => u.name) });
@@ -104,18 +109,10 @@ app.get("/users", (req, res) => {
 app.post("/login", (req, res) => {
   const name = str(req.body.user, 100);
   const pin = typeof req.body.pin === "string" ? req.body.pin : "";
-  const keys = [`u:${name}`, `ip:${req.ip}`];
-  const wait = Math.max(...keys.map(lockedFor));
-  if (wait) return res.status(429).json({ error: `Trop d'essais. Réessayez dans ${wait} min.` });
-
   const u = loadData().users.find(x => x.name === name);
   // Même durée de calcul que l'utilisateur existe ou non
   const ok = verifyPin(pin, u ? u.pinHash : "00:00");
-  if (!u || !ok) {
-    keys.forEach(registerFail);
-    return res.status(401).json({ error: "PIN incorrect" });
-  }
-  keys.forEach(k => fails.delete(k));
+  if (!u || !ok) return res.status(401).json({ error: "Code PIN incorrect" });
   res.json({ token: makeToken(u.name, SECRET, TOKEN_TTL_MS), user: u.name });
 });
 
@@ -130,7 +127,12 @@ app.get("/data", auth, (req, res) => {
       name: u.name,
       list: u.list.map(it => {
         const base = { name: it.name, comment: it.comment || "" };
-        if (u.name !== req.user) base.purchased = !!(data.purchases[u.name] && data.purchases[u.name][it.name]);
+        if (u.name !== req.user) {
+          // Valeur stockée : nom de la personne qui a réservé (ou true pour une ancienne réservation sans nom)
+          const v = data.purchases[u.name] && data.purchases[u.name][it.name];
+          base.purchased = !!v;
+          base.purchasedBy = typeof v === "string" ? v : null;
+        }
         return base;
       })
     }))
@@ -161,7 +163,12 @@ app.post("/purchase", auth, (req, res) => {
   const u = data.users.find(x => x.name === owner);
   if (!u || !u.list.some(x => x.name === item)) return res.status(400).json({ error: "Cadeau non trouvé" });
   if (!data.purchases[owner]) data.purchases[owner] = {};
-  data.purchases[owner][item] = true;
+  const already = data.purchases[owner][item];
+  if (already) {
+    const who = typeof already === "string" ? already : "quelqu'un";
+    return res.status(409).json({ error: `Ce cadeau vient d'être réservé par ${who}.` });
+  }
+  data.purchases[owner][item] = req.user; // on garde le nom de la personne qui réserve
   saveData(data);
   res.json({ success: true });
 });
