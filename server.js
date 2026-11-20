@@ -79,6 +79,30 @@ function saveData(data) {
   console.log("Cadeaux remis à zéro (RESET_GIFTS=" + id + ")");
 })();
 
+/* ---------- Réinitialisation des PIN (une seule fois) ----------
+   Définir RESET_PINS (ex. "1") : au démarrage, les PIN de chaque personne sont
+   remplacés par ceux de data.seed.json. Même principe que RESET_GIFTS :
+   un marqueur évite de recommencer ; changer la valeur pour refaire l'opération. */
+(function resetPinsIfAsked() {
+  const id = process.env.RESET_PINS;
+  if (!id) return;
+  const marker = path.join(DATA_DIR, ".pins-reset");
+  let done = "";
+  try { done = fs.readFileSync(marker, "utf8").trim(); } catch (e) {}
+  if (done === id) return;
+  let seed;
+  try { seed = JSON.parse(fs.readFileSync(SEED_FILE, "utf8")); } catch (e) { console.error("Seed illisible, PIN non réinitialisés"); return; }
+  const data = loadData();
+  let n = 0;
+  data.users.forEach(u => {
+    const s = seed.users.find(x => x.name === u.name);
+    if (s && s.pinHash) { u.pinHash = s.pinHash; n++; }
+  });
+  saveData(data);
+  fs.writeFileSync(marker, id);
+  console.log(`PIN réinitialisés pour ${n} personne(s) (RESET_PINS=${id})`);
+})();
+
 /* ---------- Middleware ---------- */
 app.set("trust proxy", 1);
 app.disable("x-powered-by");

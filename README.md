@@ -17,6 +17,7 @@ npm start        # http://localhost:3000
 | `PORT` | Port d'écoute (fourni par l'hébergeur) | 3000 |
 | `DATA_DIR` | Dossier où `data.json` est stocké (à pointer vers le volume en ligne) | dossier du projet |
 | `RESET_GIFTS` | Efface tous les cadeaux (garde personnes et PIN) une seule fois ; changer la valeur pour recommencer | — |
+| `RESET_PINS` | Remplace les PIN par ceux de `data.seed.json` une seule fois ; changer la valeur pour recommencer | — |
 | `SESSION_SECRET` | Clé de signature des sessions (longue chaîne aléatoire) | générée et enregistrée dans `DATA_DIR` |
 
 Au premier démarrage, `data.json` est créé dans `DATA_DIR` à partir de `data.seed.json`.
